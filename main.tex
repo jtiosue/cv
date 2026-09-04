@@ -1,0 +1,247 @@
+%% start of file `template.tex'.
+%% Copyright 2006-2015 Xavier Danaux (xdanaux@gmail.com).
+%
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License version 1.3c,
+% available at http://www.latex-project.org/lppl/.
+\documentclass[11pt,letter,sans,colorlinks,linkcolor=gray]{moderncv}        % possible options include font size ('10pt', '11pt' and '12pt'), paper size ('a4paper', 'letterpaper', 'a5paper', 'legalpaper', 'executivepaper' and 'landscape') and font family ('sans' and 'roman')
+\pdfoutput=1
+% moderncv themes
+\moderncvstyle{classic}                             % style options are 'casual' (default), 'classic', 'banking', 'oldstyle' and 'fancy'
+\moderncvcolor{blue}                               % color options 'black', 'blue' (default), 'burgundy', 'green', 'grey', 'orange', 'purple' and 'red'
+%\renewcommand{\familydefault}{\sfdefault}         % to set the default font; use '\sfdefault' for the default sans serif font, '\rmdefault' for the default roman one, or any tex font name
+%\nopagenumbers{}     
+% uncomment to suppress automatic page numbering for CVs longer than one page
+\usepackage{lastpage}
+\rfoot{\addressfont\itshape\textcolor{gray}{\thepage/\pageref{LastPage}}}
+% character encoding
+\usepackage[utf8]{inputenc}                       % if you are not using xelatex ou lualatex, replace by the encoding you are using
+%\usepackage{CJKutf8}                              % if you need to use CJK to typeset your resume in Chinese, Japanese or Korean
+
+%%%%%%%%%%%%%%%
+
+% PUBLICATIONS
+
+% \usepackage[backend=biber,style=phys,biblabel=brackets,sorting=ndymdt,eprint=true]{biblatex}
+\usepackage[backend=biber,style=phys,biblabel=brackets,sorting=ndymdt,eprint=true]{biblatex}
+\addbibresource{data/publications.bib}
+
+\DeclareFieldFormat[misc]{title}{\mkbibquote{#1}}
+
+\defbibenvironment{publist}
+  {\list
+     {\hspace{-4em}\printtext[labelnumberwidth]{\printfield{labelnumber}}}
+     {\setlength{\leftmargin}{21.25mm}%
+      \setlength{\itemsep}{\bibitemsep}%
+      \setlength{\parsep}{\bibparsep}
+      }%
+      \renewcommand*{\makelabel}[1]{\hss##1}
+      }
+  {\endlist}
+  {\item}
+
+% sort in reverse date order
+% https://tex.stackexchange.com/questions/46868/biblatex-sorting-by-date
+\DeclareSortingTemplate{ndymdt}{
+  \sort{
+    \field{presort}
+  }
+  \sort[final]{
+    \field{sortkey}
+  }
+  % \sort{
+  %   \field{sortname}
+  %   \field{author}
+  %   \field{editor}
+  %   \field{translator}
+  %   \field{sorttitle}
+  %   \field{title}
+  % }
+  \sort[direction=descending]{
+    \field{sortyear}
+    \field{year}
+    \literal{9999}
+  }
+  \sort[direction=descending]{
+    \field[padside=left,padwidth=2,padchar=0]{month}
+    \literal{99}
+  }
+  \sort[direction=descending]{
+    \field[padside=left,padwidth=2,padchar=0]{day}
+    \literal{99}
+  }
+  \sort{
+    \field{sorttitle}
+  }
+  \sort[direction=descending]{
+    \field[padside=left,padwidth=4,padchar=0]{volume}
+    \literal{9999}
+  }
+}
+
+% reverse numbering
+% Count total number of entries in each refsection
+\AtDataInput{%
+  \csnumgdef{entrycount:\therefsection}{%
+    \csuse{entrycount:\therefsection}+1}}
+
+% Print the labelnumber as the total number of entries in the
+% current refsection, minus the actual labelnumber, plus one
+\DeclareFieldFormat{labelnumber}{\mkbibdesc{#1}}    
+\newrobustcmd*{\mkbibdesc}[1]{%
+  \number\numexpr\csuse{entrycount:\therefsection}+1-#1\relax}
+
+%% replace my name with bold
+% can do this, or can manually do it in bib file with
+% @preamble{ "\newcommand{\jtiosue}{\mkbibbold{J. T. Iosue}}" }
+\DeclareSourcemap{
+  \maps[datatype=bibtex]{
+    \map[overwrite]{
+      \step[fieldsource=author, match={Iosue, Joseph T.}, replace={\\mkbibbold{J. T. Iosue}}]
+      \step[fieldsource=author, match={Iosue, Joseph}, replace={\\mkbibbold{J. T. Iosue}}]
+      \step[fieldsource=author, match={Joseph T. Iosue}, replace={\\mkbibbold{J. T. Iosue}}]
+      \step[fieldsource=author, match={Joseph Iosue}, replace={\\mkbibbold{J. T. Iosue}}]
+      \step[fieldsource=author, match={J. T. Iosue}, replace={\\mkbibbold{J. T. Iosue}}]
+      \step[fieldsource=author, match={J. Iosue}, replace={\\mkbibbold{J. T. Iosue}}]
+    }
+  }
+}
+% biblatex wants integer months
+% https://tex.stackexchange.com/questions/438396/regex-replacement-for-biblatex-biber-to-eliminate-the-warning-month-not-integer
+% https://tex.stackexchange.com/questions/275564/biber-configuration-file-for-shortening-journal-names
+% https://tex.stackexchange.com/questions/115283/how-to-use-biber-to-convert-integer-to-bibtex-month-macro
+\DeclareSourcemap{
+  \maps[datatype=bibtex]{
+    \map[overwrite]{
+      \step[fieldsource=month, match=\regexp{\A(j|J)an(uary)?\Z}, replace=1]
+      \step[fieldsource=month, match=\regexp{\A(f|F)eb(ruary)?\Z}, replace=2]
+      \step[fieldsource=month, match=\regexp{\A(m|M)ar(ch)?\Z}, replace=3]
+      \step[fieldsource=month, match=\regexp{\A(a|A)pr(il)?\Z}, replace=4]
+      \step[fieldsource=month, match=\regexp{\A(m|M)ay\Z}, replace=5]
+      \step[fieldsource=month, match=\regexp{\A(j|J)un(e)?\Z}, replace=6]
+      \step[fieldsource=month, match=\regexp{\A(j|J)ul(y)?\Z}, replace=7]
+      \step[fieldsource=month, match=\regexp{\A(a|A)ug(ust)?\Z}, replace=8]
+      \step[fieldsource=month, match=\regexp{\A(s|S)ep(tember)?\Z}, replace=9]
+      \step[fieldsource=month, match=\regexp{\A(o|O)ct(ober)?\Z}, replace=10]
+      \step[fieldsource=month, match=\regexp{\A(n|N)ov(ember)?\Z}, replace=11]
+      \step[fieldsource=month, match=\regexp{\A(d|D)ec(ember)?\Z}, replace=12]
+    }
+  }
+}
+
+
+%%%%%%%%%%%%%%%
+
+% adjust the page margins
+\usepackage[right=1.9cm,left=1.7cm,bottom=2.5cm,top=2.6cm]{geometry}
+\setlength{\hintscolumnwidth}{1.8cm}                % if you want to change the width of the column with the dates
+\setlength{\makecvheadnamewidth}{8cm}           % for the 'classic' style, if you want to force the width allocated to your name and avoid line breaks. be careful though, the length is normally calculated to avoid any overlap with your personal info; use this at your own typographical risks...
+% \usepackage{mathpazo}
+
+% \definecolor{c1}{rgb}{0.858, 0.188, 0.478}
+\definecolor{c1}{HTML}{B00000}
+\usepackage{etaremune}
+%To allow resumption after page break and such:
+\usepackage{etoolbox} %% For \AtEndEnvironment
+
+\makeatletter %% <- change @ so that it can be used in macro names
+  %% Define the resume key for etaremune:
+  \define@boolkey[EM]{etaremune}{resume}[true]{}
+  \presetkeys[EM]{etaremune}{resume=false}{} %% <- false by default
+
+  %% Increase starting value of previous etaremune environment if resuming
+  \AtEndEnvironment{etaremune}{%
+    \ifEM@etaremune@resume
+      \EM@resumewrite{\csname EM@prevlist@\@roman{\@enumdepth}\endcsname}{\EM@currlist}%
+    \fi
+    \expandafter\xdef\csname EM@prevlist@\@roman{\@enumdepth}\endcsname{\EM@currlist}%
+  }
+  \newcommand*\EM@resumewrite[2]{% %% Expand arguments and then call EM@resume@write@
+    \begingroup
+      \edef\temp{\noexpand\EM@resumewrite@
+        {\expandafter\string\csname etaremune@#1\endcsname}%
+        {\expandafter\string\csname etaremune@#2\endcsname}}%
+      \temp
+    \endgroup
+  }
+  \newcommand*\EM@resumewrite@[2]{% %% Write to aux file
+    \immediate\write\@auxout{\xdef#1{\string\noexpand\string\the\numexpr#1+\string\noexpand#2 }}%
+  }
+\makeatother %% <- change @ back
+
+% A substitute for etaremune:
+% \newenvironment{benumerate}[1]{
+%     \let\oldItem\item
+%     \def\item{\addtocounter{enumi}{-2}\oldItem}
+%     \begin{enumerate}
+%     \setcounter{enumi}{#1}
+%     \addtocounter{enumi}{1}
+% }{
+%     \end{enumerate}
+% }
+
+% \renewcommand*{\cventry}[7][.25em]{
+%   \cvitem[#1]{#2}{%
+%     {\bfseries#3}%
+%     \ifthenelse{\equal{#4}{}}{}{, {\slshape#4}}%
+%     \ifthenelse{\equal{#5}{}}{}{, #5}%
+%     \ifthenelse{\equal{#6}{}}{}{, #6}%
+%     \strut% ROW CHANGED!
+%     \ifx&#7&%
+%     \else{\newline{}\begin{minipage}[t]{\linewidth}\small#7\end{minipage}}\fi}}
+
+
+
+% % bibliography adjustements (only useful if you make citations in your resume, or print a list of publications using BibTeX)
+% %   to show numerical labels in the bibliography (default is to show no labels)
+% % \makeatletter\renewcommand*{\bibliographyitemlabel}{\@biblabel{\arabic{enumiv}}}\makeatother
+% %   to redefine the bibliography heading string ("Publications")
+% % \renewcommand{\refname}{Articles}
+% % bibliography with mutiple entries
+% % \usepackage{multibib}
+% % \newcites{book,misc}{{Books},{Others}}
+% % Count total number of entries in each refsection
+% \AtDataInput{%
+%   \csnumgdef{entrycount:\therefsection}{%
+%     \csuse{entrycount:\therefsection}+1}}
+% 
+% % Print the labelnumber as the total number of entries in the
+% % current refsection, minus the actual labelnumber, plus one
+% \DeclareFieldFormat{labelnumber}{\mkbibdesc{#1}}    
+% \newrobustcmd*{\mkbibdesc}[1]{%
+%   \number\numexpr\csuse{entrycount:\therefsection}+1-#1\relax}
+% 
+
+%% Make years smaller
+\let\oldcventry\cventry
+\renewcommand{\cventry}[6]{\oldcventry{{\small #1}}{#2}{#3}{#4}{#5}{#6}}
+
+%%
+\usepackage{xcolor}
+% \AfterPreamble{
+
+% }
+
+%----------------------------------------------------------------------------------
+%            content
+%----------------------------------------------------------------------------------
+
+\input{basic-info}
+
+\begin{document}
+\hypersetup{
+    % colorlinks=true,
+    urlcolor=c1,
+    citecolor=blue,
+}
+%\begin{CJK*}{UTF8}{gbsn}                          % to typeset your resume in Chinese using CJK
+%-----       resume       ---------------------------------------------------------
+\makecvtitle
+
+\vspace{-5mm}
+
+\input{content}
+
+\end{document}
+
+
